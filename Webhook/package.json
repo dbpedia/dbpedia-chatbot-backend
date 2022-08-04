@@ -1,0 +1,22 @@
+{
+  "name": "webhook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "actions-on-google": "^2.5.0",
+    "axios": "0.18.0",
+    "body-parser": "^1.18.3",
+    "dialogflow": "^0.6.0",
+    "dialogflow-fulfillment": "^0.6.1",
+    "express": "^4.18.1",
+    "fuzzyset": "1.0.6",
+    "sparql-http-client": "2.4.0"
+  }
+}
