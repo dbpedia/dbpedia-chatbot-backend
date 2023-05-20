@@ -1,0 +1,43 @@
+{
+    "responseId": "e36ec18a-4b70-4b17-a640-9bd027485847-97a30490",
+    "queryResult": {
+      "queryText": "qanary list",
+      "parameters": {},
+      "allRequiredParamsPresent": true,
+      "fulfillmentMessages": [
+        {
+          "text": {
+            "text": [
+              ""
+            ]
+          }
+        }
+      ],
+      "outputContexts": [
+        {
+          "name": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011/contexts/__system_counters__",
+          "parameters": {
+            "no-input": 0,
+            "no-match": 0
+          }
+        }
+      ],
+      "intent": {
+        "name": "projects/dbpedia-chatbot-v1-kaab/agent/intents/b5a0b546-a983-4664-b62f-1ed5c7829abb",
+        "displayName": "qanary-ActiveQanaryComponents"
+      },
+      "intentDetectionConfidence": 0.7601398,
+      "languageCode": "en",
+      "sentimentAnalysisResult": {
+        "queryTextSentiment": {
+          "score": 0.3,
+          "magnitude": 0.3
+        }
+      }
+    },
+    "originalDetectIntentRequest": {
+      "source": "DIALOGFLOW_CONSOLE",
+      "payload": {}
+    },
+    "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
+  }

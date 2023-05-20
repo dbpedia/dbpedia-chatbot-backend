@@ -1,0 +1,9 @@
+[config]
+URL = http://demos.swe.htwk-leipzig.de:40100/qanary/query
+SECOND_URL = http://demos.swe.htwk-leipzig.de:40111/startquestionansweringwithtextquestion
+USERNAME = admin
+PASSWORD = admin 
+HEIGHT = 750px 
+GRAVITY = -90
+SPRING_LENGTH = 175
+CENTRAL_GRAVITY = 0

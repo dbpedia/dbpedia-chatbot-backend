@@ -1,0 +1,47 @@
+{
+    "responseId": "7691fa4e-a2d1-4243-b6b8-71cdf0525255-97a30490",
+    "queryResult": {
+      "queryText": "remove ldshuyo",
+      "parameters": {
+        "componentname": "ldshuyo"
+      },
+      "allRequiredParamsPresent": true,
+      "fulfillmentMessages": [
+        {
+          "text": {
+            "text": [
+              ""
+            ]
+          }
+        }
+      ],
+      "outputContexts": [
+        {
+          "name": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011/contexts/__system_counters__",
+          "parameters": {
+            "no-input": 0,
+            "no-match": 0,
+            "componentname": "ldshuyo",
+            "componentname.original": "ldshuyo"
+          }
+        }
+      ],
+      "intent": {
+        "name": "projects/dbpedia-chatbot-v1-kaab/agent/intents/6e28bd6c-222d-426d-90bd-04c180a561fa",
+        "displayName": "qanary-DeactivateComponent"
+      },
+      "intentDetectionConfidence": 0.7578887,
+      "languageCode": "en",
+      "sentimentAnalysisResult": {
+        "queryTextSentiment": {
+          "score": -0.6,
+          "magnitude": 0.6
+        }
+      }
+    },
+    "originalDetectIntentRequest": {
+      "source": "DIALOGFLOW_CONSOLE",
+      "payload": {}
+    },
+    "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
+  }
