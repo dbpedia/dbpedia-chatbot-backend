@@ -1,7 +1,0 @@
-Flask ==2.0.1
-rdflib==5.0.0
-pyvis==0.1.9
-requests==2.25.1
-SPARQLWrapper==1.8.5
-qanary-helpers==0.1.0
-configparser==5.0.2
