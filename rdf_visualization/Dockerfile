@@ -1,16 +1,13 @@
 FROM python:3.7
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
+COPY . /app
 
-# Install app dependencies
-COPY requirements.txt ./
+RUN pip install virtualenv 
+RUN virtualenv venv && . venv/bin/activate
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Bundle app source
-COPY . .
+EXPOSE 8080
 
-EXPOSE 3001
-
-CMD [ "python", "app.py" ]
+CMD [ "python3", "app.py", "--host", "0.0.0.0"]
