@@ -68,7 +68,7 @@ def html_page():
 		VALUES ?type { qa:AnnotationOfInstance }
 		?s a ?type .
 		?s oa:annotatedBy ?annotatingService .
-		?s oa:annotatedAt ?time .ß
+		?s oa:annotatedAt ?time .
 	}
 	"""   
 	print(sparql_query)
