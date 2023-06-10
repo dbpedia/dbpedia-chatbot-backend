@@ -1,16 +1,13 @@
-FROM python:3.9
+FROM python:3.7
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
+COPY . /app
 
-# Install app dependencies
-COPY requirements.txt ./
+RUN pip install virtualenv 
+RUN virtualenv venv && . venv/bin/activate
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Bundle app source
-COPY . .
+EXPOSE 8080
 
-EXPOSE 5000
-
-CMD ["uvicorn", "main:app", "--workers", "1", "--host=0.0.0.0", "--port=5000"]	
+CMD ["uvicorn", "main:app", "--workers", "1", "--host=0.0.0.0", "--port=8080"]	
