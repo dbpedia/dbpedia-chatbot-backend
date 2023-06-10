@@ -12,6 +12,14 @@ The project Supervision and support is done by:
 * [Ricardo Usbeck](https://github.com/RicardoUsbeck)
 * [Ram Athreya](https://github.com/ram-g-athreya)
 
+Two backend services of this chatbot consists of webhook and rdf_visualization. To build and run the docker images of these two services, please follow the below steps:
+1. **Webhook**:
+	Run the command `bash ./webhook/build.sh` in your main directory (dbpedia-chatbot-backend).
+	Open your browser to the URL given on your terminal once the server is up!
+2. **RDF Visualizatotion**:
+	Run the command `bash ./rdf_visualization/build.sh` in your main directory (dbpedia-chatbot-backend).
+	Open your browser to the URL given on your terminal once the server is up!
+
 Use cases of the future QA system:
 
 * Users will be able to see if their intended entities have been correctly identified by the QA system. If not the users can accordingly rephrase their questions to get the desirable results.
