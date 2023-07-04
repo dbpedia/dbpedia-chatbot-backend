@@ -19,7 +19,7 @@ jobs:
           echo "X_APP_VERSION=$(cat < main.py | grep -Po '(?<=__version__ = \")([^\"]*)')" >> $GITHUB_ENV
       - name: Build the Docker image for deployment
         run: >
-          docker build --tag "$DOCKER_IMAGE_NAME:latest" .
+          docker build --tag "$DOCKER_IMAGE_NAME:latest" ./webhook
       - name: Tag image with specific version
         run: >
           docker tag "$DOCKER_IMAGE_NAME:latest" "$DOCKER_IMAGE_NAME:$X_APP_VERSION"
