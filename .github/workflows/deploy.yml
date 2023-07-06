@@ -3,7 +3,7 @@ name: Docker Image CI
 env:
   DOCKER_IMAGE_WEBHOOK: dbpedia/dbpedia-chatbot-backend/Webhook
   DOCKER_IMAGE_RDF_VIZ: dbpedia/dbpedia-chatbot-backend/rdf_viz
-  DOCKER_CONTAINER_WEBHOOK: dbpedia-chatbot-backend/webhook
+  DOCKER_CONTAINER_WEBHOOK: dbpedia-chatbot-backend/Webhook
   DOCKER_CONTAINER_RDF_VIZ: dbpedia-chatbot-backend/rdf_viz
 
 on:
