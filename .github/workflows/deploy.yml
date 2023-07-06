@@ -1,8 +1,7 @@
 name: Docker Image CI
 
 env:
-  DOCKER_IMAGE_WEBHOOK: dbpedia/dbpedia-chatbot-backend/Webhook
-  DOCKER_IMAGE_RDF_VIZ: dbpedia/dbpedia-chatbot-backend/rdf_visualization
+  DOCKER_IMAGE_NAME: dbpedia/dbpedia-chatbot-backend
   DOCKER_CONTAINER_WEBHOOK: dbpedia-chatbot-webhook
   DOCKER_CONTAINER_RDF_VIZ: dbpedia-chatbot-rdf-viz
 
@@ -24,30 +23,30 @@ jobs:
           echo "changing to /webhook"
           cd Webhook
           echo "building webhook service"
-          docker build --tag "$DOCKER_IMAGE_WEBHOOK:latest" .
+          docker build --tag "$DOCKER_IMAGE_NAME-webhook:latest" .
           echo "changing to rdf_visualization"
           cd ../rdf_visualization
           echo "building rdf viz service"
-          docker build --tag "$DOCKER_IMAGE_RDF_VIZ:latest" .
+          docker build --tag "$DOCKER_IMAGE_NAME-rdfviz:latest" .
       - name: Tag images with specific version
         run: |
           echo "tagging webhook image"
-          docker tag "$DOCKER_IMAGE_WEBHOOK:latest" "$DOCKER_IMAGE_WEBHOOK:X_APP_VERSION"
+          docker tag "$DOCKER_IMAGE_NAME-webhook:latest" "$DOCKER_IMAGE_NAME-webhook:X_APP_VERSION"
           echo "tagging rdf viz image"
-          docker tag "$DOCKER_IMAGE_RDF_VIZ:latest" "$DOCKER_IMAGE_RDF_VIZ:X_APP_VERSION"
+          docker tag "$DOCKER_IMAGE_NAME-rdfviz:latest" "$DOCKER_IMAGE_NAME-rdfviz:X_APP_VERSION"
       - name: Docker Login
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DBP_DOCKERHUB_CREDENTIAL_USERNAME }}
           password: ${{ secrets.DBP_DOCKERHUB_CREDENTIAL_TOKEN_PUSHIMAGES }}
       - name: Push webhook image with latest version
-        run: docker push "$DOCKER_IMAGE_WEBHOOK:latest"
+        run: docker push "$DOCKER_IMAGE_NAME-webhook:latest"
       - name: Push webhook image with specific version
-        run: docker push "$DOCKER_IMAGE_WEBHOOK:X_APP_VERSION"
+        run: docker push "$DOCKER_IMAGE_NAME-webhook:X_APP_VERSION"
       - name: Push rdf viz image with latest version
-        run: docker push "$DOCKER_IMAGE_RDF_VIZ:latest"
+        run: docker push "$DOCKER_IMAGE_NAME-rdfviz:latest"
       - name: Push rdf viz image with specific version
-        run: docker push "$DOCKER_IMAGE_RDF_VIZ:X_APP_VERSION"
+        run: docker push "$DOCKER_IMAGE_NAME-rdfviz:X_APP_VERSION"
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -60,16 +59,16 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          envs: DOCKER_IMAGE_WEBHOOK,DOCKER_IMAGE_RDF_VIZ,DOCKER_CONTAINER_WEBHOOK, DOCKER_CONTAINER_RDF_VIZ
+          envs: DOCKER_IMAGE_NAME,DOCKER_CONTAINER_WEBHOOK, DOCKER_CONTAINER_RDF_VIZ
           script: |
             docker stop "$DOCKER_CONTAINER_WEBHOOK" || true && docker rm "$DOCKER_CONTAINER_WEBHOOK" || true
             echo "stop container rdfviz"
             docker stop "$DOCKER_CONTAINER_RDF_VIZ" || true && docker rm "$DOCKER_CONTAINER_RDF_VIZ || true
-            echo "Pulling image: $DOCKER_IMAGE_WEBHOOK" 
-            docker pull $DOCKER_IMAGE_WEBHOOK:latest
-            echo "Pulling image: $DOCKER_IMAGE_RDF_VIZ" 
-            docker pull $DOCKER_IMAGE_RDF_VIZ:latest
+            echo "Pulling image: $DOCKER_IMAGE_NAME-webhook" 
+            docker pull $DOCKER_IMAGE_NAME-webhook:latest
+            echo "Pulling image: $DOCKER_IMAGE_NAME" 
+            docker pull $DOCKER_IMAGE_NAME-rdfviz:latest
             echo "Starting container: $DOCKER_CONTAINER_WEBHOOK" 
-            docker run --restart=always -d -p 40194:8080 --name "$DOCKER_CONTAINER_WEBHOOK" "$DOCKER_IMAGE_WEBHOOK:latest"
+            docker run --restart=always -d -p 40194:8080 --name "$DOCKER_CONTAINER_WEBHOOK" "$DOCKER_IMAGE_NAME-webhook:latest"
             echo "Starting container: $DOCKER_CONTAINER_RDF_VIZ"
-            docker run --restart=always -d -p 40194:8080 --name "$DOCKER_CONTAINER_RDF_VIZ" "$DOCKER_IMAGE_RDF_VIZ:latest"
+            docker run --restart=always -d -p 40194:8080 --name "$DOCKER_CONTAINER_RDF_VIZ" "$DOCKER_IMAGE_NAME-rdfviz:latest"
