@@ -30,7 +30,7 @@ jobs:
           echo "building rdf viz service"
           docker build --tag "$DOCKER_IMAGE_RDF_VIZ:latest" .
       - name: Tag images with specific version
-        run: 
+        run: |
           echo "tagging webhook image"
           docker tag "$DOCKER_IMAGE_WEBHOOK:latest" "$DOCKER_IMAGE_WEBHOOK:X_APP_VERSION"
           echo "tagging rdf viz image"
