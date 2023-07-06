@@ -44,7 +44,7 @@ jobs:
       - name: Push webhook image with specific version
         run: docker push "$DOCKER_IMAGE_NAME:X_APP_VERSION"
       - name: Push rdf viz image with latest version
-        run: docker push "$DOCKER_IMAGE_NAME:latest"
+        run: docker push "$DOCKER_IMAGE_NAME:rdfvizlatest"
       - name: Push rdf viz image with specific version
         run: docker push "$DOCKER_IMAGE_NAME:X_APP_VERSION"
   deploy:
