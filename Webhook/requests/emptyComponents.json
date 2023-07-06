@@ -1,43 +1,43 @@
 {
-    "responseId": "800b3325-29a6-42b1-a5f4-56edd0ec5690-97a30490",
-    "queryResult": {
-      "queryText": "empty all components",
-      "parameters": {},
-      "allRequiredParamsPresent": true,
-      "fulfillmentMessages": [
-        {
-          "text": {
-            "text": [
-              ""
-            ]
-          }
-        }
-      ],
-      "outputContexts": [
-        {
-          "name": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011/contexts/__system_counters__",
-          "parameters": {
-            "no-input": 0,
-            "no-match": 0
-          }
-        }
-      ],
-      "intent": {
-        "name": "projects/dbpedia-chatbot-v1-kaab/agent/intents/fc5c3954-f278-448d-bc2b-6770e3384a9b",
-        "displayName": "qanary-EmptyComponents"
-      },
-      "intentDetectionConfidence": 1,
-      "languageCode": "en",
-      "sentimentAnalysisResult": {
-        "queryTextSentiment": {
-          "score": -0.5,
-          "magnitude": 0.5
+  "responseId": "800b3325-29a6-42b1-a5f4-56edd0ec5690-97a30490",
+  "queryResult": {
+    "queryText": "empty all components",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
         }
       }
+    ],
+    "outputContexts": [
+      {
+        "name": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011/contexts/__system_counters__",
+        "parameters": {
+          "no-input": 0,
+          "no-match": 0
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/dbpedia-chatbot-v1-kaab/agent/intents/fc5c3954-f278-448d-bc2b-6770e3384a9b",
+      "displayName": "qanary-EmptyComponents"
     },
-    "originalDetectIntentRequest": {
-      "source": "DIALOGFLOW_CONSOLE",
-      "payload": {}
-    },
-    "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
-  }
+    "intentDetectionConfidence": 1,
+    "languageCode": "en",
+    "sentimentAnalysisResult": {
+      "queryTextSentiment": {
+        "score": -0.5,
+        "magnitude": 0.5
+      }
+    }
+  },
+  "originalDetectIntentRequest": {
+    "source": "DIALOGFLOW_CONSOLE",
+    "payload": {}
+  },
+  "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
+}

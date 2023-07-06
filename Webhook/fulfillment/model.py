@@ -1,14 +1,15 @@
+from helpers import intents
+from helpers.file_saver import file_saver
+import json
+from typing import List
+from pydantic import BaseModel, Field
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(os.path.join(os.path.dirname(__file__), '../helpers'))
-from pydantic import BaseModel, Field
-from typing import List
-import json
-from helpers.file_saver import file_saver
-from helpers import intents
 
 saver = file_saver()
+
 
 class Information(BaseModel):
     message: str = Field(
@@ -24,20 +25,24 @@ class Information(BaseModel):
         example="1235456789"
     )
 
+
 class FullfillmentText(BaseModel):
     text: List[str] = Field(
         title="Text response from webhook.", example="Your answer!"
     )
+
 
 class FulfillmentMessage(BaseModel):
     text: FullfillmentText = Field(
         title="A list of response texts.", example=["Your answer!", "And another one!"]
     )
 
+
 class FulfillmentMessages(BaseModel):
     fulfillmentMessages: List[FulfillmentMessage] = Field(
         title="A list of responses. Can be adjusted to fit other response types."
     )
+
 
 intentMap = {}
 
@@ -55,25 +60,31 @@ intentMap['qanary-ResetComponents'] = intents.resetComponentsIntent
 intentMap['qanary-ShowActiveComponents'] = intents.showActiveComponentsIntent
 intentMap['qanary-ShowRdfVisualization'] = intents.showRdfVisualizationIntent
 
+
 def save_dicts():
     root = "./dict_jsons/"
-    json.dump(intents.sessionIdManagement, open(f"{root}sessionIdManagement.json", "w"))
+    json.dump(intents.sessionIdManagement, open(
+        f"{root}sessionIdManagement.json", "w"))
     json.dump(intents.lastKbquestion, open(f"{root}lastKbquestion.json", "w"))
     json.dump(intents.lastGraphId, open(f"{root}lastGraphId.json", "w"))
     json.dump(intents.profiles, open(f"{root}profiles.json", "w"))
 
+
 def set_dicts():
     root = "./dict_jsons/"
-    intents.sessionIdManagement = json.load(open(f"{root}sessionIdManagement.json", "r"))
+    intents.sessionIdManagement = json.load(
+        open(f"{root}sessionIdManagement.json", "r"))
     intents.lastKbquestion = json.load(open(f"{root}lastKbquestion.json", "r"))
     intents.lastGraphId = json.load(open(f"{root}lastGraphId.json", "r"))
     intents.profiles = json.load(open(f"{root}profiles.json", "r"))
+
 
 def handle_request(request_information):
     print(request_information, flush=True)
     # for multiple workers
     # set_dicts()
-    message = intentMap[request_information['queryResult']['intent']['displayName']](request_information)
+    message = intentMap[request_information['queryResult']
+                        ['intent']['displayName']](request_information)
     # for multiple workers
     # save_dicts()
     fulltext = FullfillmentText(text=[message])
