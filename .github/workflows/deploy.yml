@@ -61,6 +61,9 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           envs: DOCKER_IMAGE_NAME,DOCKER_CONTAINER_WEBHOOK, DOCKER_CONTAINER_RDF_VIZ
           script: |
+            true || docker stop "$DOCKER_CONTAINER_WEBHOOK" && true || docker rm "$DOCKER_CONTAINER_WEBHOOK"
+            echo "stop container rdfviz"
+            true || docker stop "$DOCKER_CONTAINER_RDF_VIZ" && true || docker rm "$DOCKER_CONTAINER_RDF_VIZ"
             echo "Pulling image: $DOCKER_IMAGE_NAME-webhook" 
             docker pull $DOCKER_IMAGE_NAME-webhook:latest
             echo "Pulling image: $DOCKER_IMAGE_NAME" 
