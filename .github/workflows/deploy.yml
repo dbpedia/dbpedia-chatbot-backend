@@ -70,5 +70,3 @@ jobs:
             docker pull $DOCKER_IMAGE_NAME-rdfviz:latest
             echo "Starting container: $DOCKER_CONTAINER_WEBHOOK" 
             docker run --restart=always -d -p 40194:8080 --name "$DOCKER_CONTAINER_WEBHOOK" "$DOCKER_IMAGE_NAME-webhook:latest"
-            echo "Starting container: $DOCKER_CONTAINER_RDF_VIZ"
-            docker run --restart=always -d -p 40194:8081 --name "$DOCKER_CONTAINER_RDF_VIZ" "$DOCKER_IMAGE_NAME-rdfviz:latest"
