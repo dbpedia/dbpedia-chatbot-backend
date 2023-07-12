@@ -1,47 +1,47 @@
 {
-    "responseId": "d4d56220-52e7-4e2f-ab39-831b473d5753-97a30490",
-    "queryResult": {
-      "queryText": "give information for profile Sam",
-      "parameters": {
-        "profilename": "Sam"
-      },
-      "allRequiredParamsPresent": true,
-      "fulfillmentMessages": [
-        {
-          "text": {
-            "text": [
-              ""
-            ]
-          }
-        }
-      ],
-      "outputContexts": [
-        {
-          "name": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011/contexts/__system_counters__",
-          "parameters": {
-            "no-input": 0,
-            "no-match": 0,
-            "profilename": "Sam",
-            "profilename.original": "Sam"
-          }
-        }
-      ],
-      "intent": {
-        "name": "projects/dbpedia-chatbot-v1-kaab/agent/intents/10126843-476a-442b-b057-fe42cfa1dd33",
-        "displayName": "qanary-ComponentInformationFromProfile"
-      },
-      "intentDetectionConfidence": 1,
-      "languageCode": "en",
-      "sentimentAnalysisResult": {
-        "queryTextSentiment": {
-          "score": -0.1,
-          "magnitude": 0.1
+  "responseId": "d4d56220-52e7-4e2f-ab39-831b473d5753-97a30490",
+  "queryResult": {
+    "queryText": "give information for profile Sam",
+    "parameters": {
+      "profilename": "Sam"
+    },
+    "allRequiredParamsPresent": true,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
         }
       }
+    ],
+    "outputContexts": [
+      {
+        "name": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011/contexts/__system_counters__",
+        "parameters": {
+          "no-input": 0,
+          "no-match": 0,
+          "profilename": "Sam",
+          "profilename.original": "Sam"
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/dbpedia-chatbot-v1-kaab/agent/intents/10126843-476a-442b-b057-fe42cfa1dd33",
+      "displayName": "qanary-ComponentInformationFromProfile"
     },
-    "originalDetectIntentRequest": {
-      "source": "DIALOGFLOW_CONSOLE",
-      "payload": {}
-    },
-    "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
-  }
+    "intentDetectionConfidence": 1,
+    "languageCode": "en",
+    "sentimentAnalysisResult": {
+      "queryTextSentiment": {
+        "score": -0.1,
+        "magnitude": 0.1
+      }
+    }
+  },
+  "originalDetectIntentRequest": {
+    "source": "DIALOGFLOW_CONSOLE",
+    "payload": {}
+  },
+  "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
+}
