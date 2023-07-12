@@ -31,9 +31,9 @@ jobs:
       - name: Tag images with specific version
         run: |
           echo "tagging webhook image"
-          docker tag "$DOCKER_IMAGE_NAME-webhook:latest" "$DOCKER_IMAGE_NAME-webhook:X_APP_VERSION"
+          docker tag "$DOCKER_IMAGE_NAME-webhook:latest" "$DOCKER_IMAGE_NAME-webhook:$X_APP_VERSION"
           echo "tagging rdf viz image"
-          docker tag "$DOCKER_IMAGE_NAME-rdfviz:latest" "$DOCKER_IMAGE_NAME-rdfviz:X_APP_VERSION"
+          docker tag "$DOCKER_IMAGE_NAME-rdfviz:latest" "$DOCKER_IMAGE_NAME-rdfviz:$X_APP_VERSION"
       - name: Docker Login
         uses: docker/login-action@v2
         with:
@@ -42,11 +42,11 @@ jobs:
       - name: Push webhook image with latest version
         run: docker push "$DOCKER_IMAGE_NAME-webhook:latest"
       - name: Push webhook image with specific version
-        run: docker push "$DOCKER_IMAGE_NAME-webhook:X_APP_VERSION"
+        run: docker push "$DOCKER_IMAGE_NAME-webhook:$X_APP_VERSION"
       - name: Push rdf viz image with latest version
         run: docker push "$DOCKER_IMAGE_NAME-rdfviz:latest"
       - name: Push rdf viz image with specific version
-        run: docker push "$DOCKER_IMAGE_NAME-rdfviz:X_APP_VERSION"
+        run: docker push "$DOCKER_IMAGE_NAME-rdfviz:$X_APP_VERSION"
   deploy:
     runs-on: ubuntu-latest
     needs: build
