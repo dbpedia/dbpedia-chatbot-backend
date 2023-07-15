@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Get current version
         run: >
-          echo "X_APP_VERSION=$(cat main.py | grep -oP 'version=\K[^ ]+') >> $GITHUB_ENV
+          echo "X_APP_VERSION=$(cat ./Webhook/main.py | grep -o 'version="[^"]*"' | cut -d '"' -f2)" >> $GITHUB_ENV
       - name: Build the Docker image for deployment
         run: |
           echo "changing to /webhook"
