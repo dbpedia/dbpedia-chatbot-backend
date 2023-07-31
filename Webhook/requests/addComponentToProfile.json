@@ -1,9 +1,9 @@
 {
   "responseId": "f735da0b-93ee-4f48-b815-f584a400669e-97a30490",
   "queryResult": {
-    "queryText": "to profile Sam add ldshuyo",
+    "queryText": "to profile Sam add NED-DBpediaSpotlight",
     "parameters": {
-      "componentname": "ldshuyo",
+      "componentname": "NED-DBpediaSpotlight",
       "profilename": "Sam"
     },
     "allRequiredParamsPresent": true,
@@ -22,8 +22,8 @@
         "parameters": {
           "no-input": 0,
           "no-match": 0,
-          "componentname": "ldshuyo",
-          "componentname.original": "ldshuyo",
+          "componentname": "NED-DBpediaSpotlight",
+          "componentname.original": "NED-DBpediaSpotlight",
           "profilename": "Sam",
           "profilename.original": "Sam"
         }

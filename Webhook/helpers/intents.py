@@ -3,14 +3,19 @@ import components
 import ast
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 import requests
-import config
+# from data import defaultComponents, profileComponents, vizURL
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+defaultComponents = ["NED-DBpediaSpotlight", "SparqlExecuter",
+                     "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
+profileComponents = []
+vizURL = "https://dbpedia-rdf-viz.herokuapp.com/visualize/"
 sessionIdManagement = {}
 lastKbquestion = {}
 lastGraphId = {}
+lastKbAnswer = {}
 profiles = {}
 
 
@@ -26,7 +31,7 @@ def activateComponentIntent(agent):
         sessionId = agent['session'].split('/')[4]
         if sessionId not in sessionIdManagement:
             sessionIdManagement[sessionId] = {
-                'components': config.defaultComponents.copy()}
+                'components': defaultComponents.copy()}
         getComponent = sessionIdManagement.get(sessionId)
         localcomponentList = getComponent['components']
         index = localcomponentList.index(
@@ -56,11 +61,12 @@ def getAnswerFromDbpedia(query):
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
+    print(result)
     return result['results']['bindings'][0]['answer']['value']
 
 
 def getAnswerFromQanary(graphId):
-    endpointUrl = 'http://demos.swe.htwk-leipzig.de:40111/sparql'
+    endpointUrl = 'http://pie.qanary.net:8000/sparql'
     output = "No answer available."
     query = """
             PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
@@ -78,6 +84,7 @@ def getAnswerFromQanary(graphId):
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
+    print(result)
     dbpediaQuery = result['results']['bindings'][0]['resultAsSparqlQuery']['value']
     result = getAnswerFromDbpedia(dbpediaQuery)
     if result is not None:
@@ -88,19 +95,56 @@ def getAnswerFromQanary(graphId):
 def askQanaryIntent(agent):
     sessionId = agent['session'].split('/')[4]
     lastKbquestion[sessionId] = agent['queryResult']['queryText']
+    print(sessionIdManagement)
     getComponent = sessionIdManagement[sessionId]
+
     show = getComponent['components']
+    print(show)
     params = {
         "question": lastKbquestion[sessionId],
         "componentlist[]": show
     }
     response = requests.post(
-        'http://demos.swe.htwk-leipzig.de:40111/startquestionansweringwithtextquestion', params)
+        'http://pie.qanary.net:8000/startquestionansweringwithtextquestion', params)
+    print(response)
     responseDict = ast.literal_eval(response.text)
+    print(responseDict)
     currentGraphId = responseDict['inGraph']
     lastGraphId[sessionId] = currentGraphId
     output = getAnswerFromQanary(currentGraphId)
+    lastKbAnswer[sessionId] = output
     return output
+
+
+def getExplanationOfPrevAnswerIntent(agent):
+    # sessionId = agent['session'].split('/')[4]
+    # try:
+    #     lastGraphIdOfSession = lastGraphId[sessionId]
+    # except:
+    #     lastGraphIdOfSession = None
+    explanation = "Sorry, there was no previously asked question in this session."
+    # if lastGraphIdOfSession is not None:
+    endpointUrl = 'http://pie.qanary.net:8000/sparql'
+    output = "No explanation available."
+    graphId = "24a1132b-6c7d-4770-8f30-e87cd43f8cf8"
+    queryAnnotationsOfPrevQuestion = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+        PREFIX qa: <http://www.wdaqua.eu/qa#>
+        SELECT *
+        FROM <"""+graphId+"""> 
+        WHERE {
+            ?annotationId rdf:type ?type.
+            ?annotationId oa:hasBody ?body.
+            ?annotationId oa:hasTarget ?target.
+            ?annotationId oa:annotatedBy $X .
+        }"""
+    sparql = SPARQLWrapper(endpointUrl)
+    sparql.setQuery(queryAnnotationsOfPrevQuestion)
+    sparql.setReturnFormat(JSON)
+    sparql.setMethod(POST)
+    result = sparql.queryAndConvert()
+
+    return result if not None else explanation
 
 
 def activateProfileIntent(agent):
@@ -131,6 +175,7 @@ def activateProfileIntent(agent):
 def addComponentToProfileIntent(agent):
     profileName = agent['queryResult']['parameters']['profilename']
     sessionId = sessionId = agent['session'].split('/')[4]
+    print(sessionId)
     if sessionId+profileName in profiles:
         componentName = agent['queryResult']['parameters']['componentname']
         qanaryComponentList = components.getQanaryComponents()
@@ -187,7 +232,7 @@ def createProfileIntent(agent):
         output = 'Profile \'' + profileName + '\' already exists.'
     else:
         profiles[sessionId +
-                 profileName] = {'components': config.profileComponents.copy()}
+                 profileName] = {'components': profileComponents.copy()}
         output = ' Profile \'' + profileName + '\' added successfully. Now to use this profile you can say \'start ' + \
             profileName + '\' to activate the profile.'
     return output
@@ -257,7 +302,7 @@ def removeComponentFromProfileIntent(agent):
 def resetComponentsIntent(agent):
     sessionId = agent['session'].split('/')[4]
     sessionIdManagement[sessionId] = {
-        'components': config.defaultComponents.copy()}
+        'components': defaultComponents.copy()}
     output = 'Reset successfully, the components list is now set to default component list.'
     return output
 
@@ -278,5 +323,5 @@ def showActiveComponentsIntent(agent):
 def showRdfVisualizationIntent(agent):
     sessionId = agent['session'].split('/')[4]
     currentGraphId = lastGraphId[sessionId]
-    output = f"Go to this link to see the RDF visualization: {config.vizURL}{currentGraphId}"
+    output = f"Go to this link to see the RDF visualization: {vizURL}{currentGraphId}"
     return output

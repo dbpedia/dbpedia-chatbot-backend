@@ -5,21 +5,26 @@ import fuzzyset
 qanaryComponents = None
 qanaryComponentNames = None
 
+
 def getComponents():
     global qanaryComponents
     global qanaryComponentNames
-    response = urllib.request.urlopen('http://demos.swe.htwk-leipzig.de:40111/components').read().decode()
+    response = urllib.request.urlopen(
+        'http://pie.qanary.net:8000/components').read().decode()
     body = ast.literal_eval(response)
-    qanaryComponents = fuzzyset.FuzzySet() 
+    qanaryComponents = fuzzyset.FuzzySet()
     qanaryComponentNames = set()
     for i in range(len(body)):
         qanaryComponents.add(body[i]['name'])
+        # TODO
         qanaryComponentNames.add(body[i]['name'])
+
 
 def getQanaryComponentNames():
     global qanaryComponentNames
     getComponents()
     return qanaryComponentNames
+
 
 def getQanaryComponents():
     global qanaryComponents
