@@ -1,4 +1,4 @@
 defaultComponents = ["NED-DBpediaSpotlight", "SparqlExecuter",
                      "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 profileComponents = []
-vizURL = "https://dbpedia-rdf-viz.herokuapp.com/visualize/"
+vizURL = "http://141.57.8.18:40193/visualize/"

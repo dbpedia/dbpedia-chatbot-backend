@@ -7,6 +7,7 @@ RUN pip install virtualenv
 RUN virtualenv venv && . venv/bin/activate
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
+RUN pip3 install python-dotenv
 
 EXPOSE 8080
 

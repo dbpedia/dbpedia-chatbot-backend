@@ -1,14 +1,18 @@
 import urllib.request
 import ast
 import fuzzyset
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 qanaryComponents = None
 qanaryComponentNames = None
 
 def getComponents():
     global qanaryComponents
     global qanaryComponentNames
-    response = urllib.request.urlopen('http://demos.swe.htwk-leipzig.de:40111/components').read().decode()
+    print(os.getenv('COMPONENT_URL'))
+    response = urllib.request.urlopen(os.getenv('COMPONENT_URL')).read().decode()
     body = ast.literal_eval(response)
     qanaryComponents = fuzzyset.FuzzySet() 
     qanaryComponentNames = set()
