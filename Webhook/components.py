@@ -11,7 +11,6 @@ qanaryComponentNames = None
 def getComponents():
     global qanaryComponents
     global qanaryComponentNames
-    print(os.getenv('COMPONENT_URL'))
     response = urllib.request.urlopen(os.getenv('COMPONENT_URL')).read().decode()
     body = ast.literal_eval(response)
     qanaryComponents = fuzzyset.FuzzySet() 

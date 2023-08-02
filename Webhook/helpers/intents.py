@@ -3,7 +3,6 @@ import components
 import ast
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 import requests
-import config
 import sys
 import os
 from dotenv import load_dotenv
@@ -15,6 +14,9 @@ sessionIdManagement = {}
 lastKbquestion = {}
 lastGraphId = {}
 profiles = {}
+profileComponents = []
+DEFAULT_COMPONENTS = ["NED-DBpediaSpotlight", "SparqlExecuter",
+                     "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 
 
 def activateComponentIntent(agent):
@@ -29,7 +31,7 @@ def activateComponentIntent(agent):
         sessionId = agent['session'].split('/')[4]
         if sessionId not in sessionIdManagement:
             sessionIdManagement[sessionId] = {
-                'components': os.getenv('DEFAULT_COMPONENTS').copy()}
+                'components': DEFAULT_COMPONENTS.copy()}
         getComponent = sessionIdManagement.get(sessionId)
         localcomponentList = getComponent['components']
         index = localcomponentList.index(
@@ -188,8 +190,9 @@ def createProfileIntent(agent):
     if sessionId+profileName in profiles:
         output = 'Profile \'' + profileName + '\' already exists.'
     else:
+        
         profiles[sessionId +
-                 profileName] = {'components': os.getenv('PROFILE_COMPONENTS').copy()}
+                 profileName] = {'components': profileComponents.copy()}
         output = ' Profile \'' + profileName + '\' added successfully. Now to use this profile you can say \'start ' + \
             profileName + '\' to activate the profile.'
     return output
@@ -259,7 +262,7 @@ def removeComponentFromProfileIntent(agent):
 def resetComponentsIntent(agent):
     sessionId = agent['session'].split('/')[4]
     sessionIdManagement[sessionId] = {
-        'components': os.getenv('DEFAULT_COMPONENTS').copy()}
+        'components': DEFAULT_COMPONENTS.copy()}
     output = 'Reset successfully, the components list is now set to default component list.'
     return output
 
