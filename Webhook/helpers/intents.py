@@ -3,15 +3,20 @@ import components
 import ast
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 import requests
-import config
 import sys
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 sessionIdManagement = {}
 lastKbquestion = {}
 lastGraphId = {}
 profiles = {}
+profileComponents = []
+DEFAULT_COMPONENTS = ["NED-DBpediaSpotlight", "SparqlExecuter",
+                     "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 
 
 def activateComponentIntent(agent):
@@ -26,7 +31,7 @@ def activateComponentIntent(agent):
         sessionId = agent['session'].split('/')[4]
         if sessionId not in sessionIdManagement:
             sessionIdManagement[sessionId] = {
-                'components': config.defaultComponents.copy()}
+                'components': DEFAULT_COMPONENTS.copy()}
         getComponent = sessionIdManagement.get(sessionId)
         localcomponentList = getComponent['components']
         index = localcomponentList.index(
@@ -50,7 +55,7 @@ def activeQanaryComponentsIntent(agent):
 
 
 def getAnswerFromDbpedia(query):
-    endpointUrl = 'https://dbpedia.org/sparql'
+    endpointUrl = os.getenv('DBDBPEDIA_SPARQL_URL')
     sparql = SPARQLWrapper(endpointUrl)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -60,7 +65,7 @@ def getAnswerFromDbpedia(query):
 
 
 def getAnswerFromQanary(graphId):
-    endpointUrl = 'http://demos.swe.htwk-leipzig.de:40111/sparql'
+    endpointUrl = os.getenv('SPARQL_URL')
     output = "No answer available."
     query = """
             PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
@@ -94,8 +99,7 @@ def askQanaryIntent(agent):
         "question": lastKbquestion[sessionId],
         "componentlist[]": show
     }
-    response = requests.post(
-        'http://demos.swe.htwk-leipzig.de:40111/startquestionansweringwithtextquestion', params)
+    response = requests.post(os.getenv('QANARY_PIPELINE_URL'), params)
     responseDict = ast.literal_eval(response.text)
     currentGraphId = responseDict['inGraph']
     lastGraphId[sessionId] = currentGraphId
@@ -186,8 +190,9 @@ def createProfileIntent(agent):
     if sessionId+profileName in profiles:
         output = 'Profile \'' + profileName + '\' already exists.'
     else:
+        
         profiles[sessionId +
-                 profileName] = {'components': config.profileComponents.copy()}
+                 profileName] = {'components': profileComponents.copy()}
         output = ' Profile \'' + profileName + '\' added successfully. Now to use this profile you can say \'start ' + \
             profileName + '\' to activate the profile.'
     return output
@@ -257,7 +262,7 @@ def removeComponentFromProfileIntent(agent):
 def resetComponentsIntent(agent):
     sessionId = agent['session'].split('/')[4]
     sessionIdManagement[sessionId] = {
-        'components': config.defaultComponents.copy()}
+        'components': DEFAULT_COMPONENTS.copy()}
     output = 'Reset successfully, the components list is now set to default component list.'
     return output
 
@@ -278,5 +283,5 @@ def showActiveComponentsIntent(agent):
 def showRdfVisualizationIntent(agent):
     sessionId = agent['session'].split('/')[4]
     currentGraphId = lastGraphId[sessionId]
-    output = f"Go to this link to see the RDF visualization: {config.vizURL}{currentGraphId}"
+    output = f"Go to this link to see the RDF visualization: {os.getenv('RDF_VIZ_HOST_URL')}{currentGraphId}"
     return output
