@@ -1,7 +1,10 @@
 import urllib.request
 import ast
 import fuzzyset
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 qanaryComponents = None
 qanaryComponentNames = None
 
@@ -9,8 +12,7 @@ qanaryComponentNames = None
 def getComponents():
     global qanaryComponents
     global qanaryComponentNames
-    response = urllib.request.urlopen(
-        'http://pie.qanary.net:8000/components').read().decode()
+    response = urllib.request.urlopen(os.getenv('COMPONENT_URL')).read().decode()
     body = ast.literal_eval(response)
     qanaryComponents = fuzzyset.FuzzySet()
     qanaryComponentNames = set()
