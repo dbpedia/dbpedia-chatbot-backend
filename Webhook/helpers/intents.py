@@ -21,7 +21,7 @@ lastKbAnswer = {}
 profiles = {}
 profileComponents = []
 DEFAULT_COMPONENTS = ["NED-DBpediaSpotlight", "SparqlExecuter",
-                     "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
+                      "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 
 
 def activateComponentIntent(agent):
@@ -60,7 +60,7 @@ def activeQanaryComponentsIntent(agent):
 
 
 def getAnswerFromDbpedia(query):
-    endpointUrl = os.getenv('DBDBPEDIA_SPARQL_URL')
+    endpointUrl = os.getenv('DBPEDIA_SPARQL_URL')
     sparql = SPARQLWrapper(endpointUrl)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -234,7 +234,7 @@ def createProfileIntent(agent):
     if sessionId+profileName in profiles:
         output = 'Profile \'' + profileName + '\' already exists.'
     else:
-        
+
         profiles[sessionId +
                  profileName] = {'components': profileComponents.copy()}
         output = ' Profile \'' + profileName + '\' added successfully. Now to use this profile you can say \'start ' + \
