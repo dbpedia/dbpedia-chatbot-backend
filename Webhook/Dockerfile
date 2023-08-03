@@ -2,7 +2,7 @@ FROM python:3.7
 
 WORKDIR /app
 COPY . /app
-COPY ../config.env /app/.env
+COPY ./config.env /app/.env
 
 RUN pip install virtualenv 
 RUN virtualenv venv && . venv/bin/activate
