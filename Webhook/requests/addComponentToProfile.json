@@ -3,7 +3,7 @@
   "queryResult": {
     "queryText": "to profile Sam add NED-DBpediaSpotlight",
     "parameters": {
-      "componentname": "NED-DBpediaSpotlight",
+      "componentname": "QB-Python-DeepPavlov",
       "profilename": "Sam"
     },
     "allRequiredParamsPresent": true,
@@ -22,8 +22,8 @@
         "parameters": {
           "no-input": 0,
           "no-match": 0,
-          "componentname": "NED-DBpediaSpotlight",
-          "componentname.original": "NED-DBpediaSpotlight",
+          "componentname": "QB-Python-DeepPavlov",
+          "componentname.original": "QB-Python-DeepPavlov",
           "profilename": "Sam",
           "profilename.original": "Sam"
         }

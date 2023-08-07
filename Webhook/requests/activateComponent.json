@@ -4,7 +4,7 @@
     "queryText": "activate component",
     "parameters": {
       "activatecomponent": [
-        "NED-DBpediaSpotlight"
+        "QB-Python-DeepPavlov"
       ]
     },
     "allRequiredParamsPresent": true,
@@ -24,10 +24,10 @@
           "no-input": 0,
           "no-match": 0,
           "activatecomponent": [
-            "NED-DBpediaSpotlight"
+            "QB-Python-DeepPavlov"
           ],
           "activatecomponent.original": [
-            "NED-DBpediaSpotlight"
+            "QB-Python-DeepPavlov"
           ]
         }
       }

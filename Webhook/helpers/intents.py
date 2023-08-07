@@ -5,6 +5,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST
 import requests
 import sys
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -59,15 +60,63 @@ def activeQanaryComponentsIntent(agent):
     return output
 
 
-def getAnswerFromDbpedia(query):
-    endpointUrl = os.getenv('DBPEDIA_SPARQL_URL')
-    sparql = SPARQLWrapper(endpointUrl)
+def getAnswerFromBackend(query, URL):
+    # endpointUrl = os.getenv('DBPEDIA_SPARQL_URL')
+    sparql = SPARQLWrapper(URL)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
     print(result)
-    return result['results']['bindings'][0]['answer']['value']
+    entityURI = result['results']['bindings'][0]['uri']['value']
+    getLabelQuery = """
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            SELECT ?label WHERE {
+            <"""+entityURI+"""> rdfs:label ?label
+            FILTER(LANG(?label)="en")
+            }
+"""
+    sparql = SPARQLWrapper(URL)
+    sparql.setQuery(getLabelQuery)
+    sparql.setReturnFormat(JSON)
+    sparql.setMethod(POST)
+    label = sparql.queryAndConvert()
+    label = label['results']['bindings'][0]['label']['value']
+    return "Thank you for trying the Qanary question-answering system! Here's the answer that Qanary retrived for you: " + str(label)
+
+
+def obtainPrefixedQueryData(query):
+    dataset_prefixes = {
+        "wd": {
+            "prefix": "wd",
+            "url": "http://www.wikidata.org/entity/",
+            "sparql_url": "https://query.wikidata.org/bigdata/namespace/wdq/sparql"
+        },
+        "wdt": {
+            "prefix": "wdt",
+            "url": "http://www.wikidata.org/prop/direct/",
+            "sparql_url": "https://query.wikidata.org/bigdata/namespace/wdq/sparql"
+        },
+        "dbp": {
+            "prefix": "dbp",
+            "url": "http://dbpedia.org/resource/",
+            "sparql_url": "https://dbpedia.org/sparql"
+        }
+    }
+
+    dataset = None
+    # Use regular expression to find the prefixes in the query
+    prefix_matches = re.findall(r'\b(wd|wdt|dbpedia):', query)
+    if prefix_matches:
+        prefixes = set(prefix_matches)
+        for prefix in prefixes:
+            if prefix in dataset_prefixes:
+                dataset = prefix if prefix != "dbpedia" else "dbpedia"
+                query = f"PREFIX {prefix}: <{dataset_prefixes[dataset]['url']}>\n" + query
+
+    sparql_url = dataset_prefixes.get(dataset, {}).get('sparql_url', None)
+
+    return query, sparql_url
 
 
 def getAnswerFromQanary(graphId):
@@ -90,8 +139,9 @@ def getAnswerFromQanary(graphId):
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
     print(result)
-    dbpediaQuery = result['results']['bindings'][0]['resultAsSparqlQuery']['value']
-    result = getAnswerFromDbpedia(dbpediaQuery)
+    SparqlQuery = result['results']['bindings'][0]['resultAsSparqlQuery']['value']
+    finalSPARQLquery, queryURL = obtainPrefixedQueryData(SparqlQuery)
+    result = getAnswerFromBackend(finalSPARQLquery, queryURL)
     if result is not None:
         output = result
     return output
