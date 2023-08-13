@@ -200,7 +200,7 @@ def getExplanationOfPrevAnswerIntent(agent):
     print(""+str(result))
     explanationFromQanary = "You asked for the actions of "+componentName + \
         "in the last QA process. There the component has identified the entity '' at position ... which was interpreted as the DBpedia-Resource ... (label)."
-    return result if not None else explanation
+    return explanationFromQanary if not None else explanation
 
 
 def activateProfileIntent(agent):
