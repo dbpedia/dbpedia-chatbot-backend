@@ -1,17 +1,17 @@
 {
     "responseId": "13261220-eae4-4728-8107-be1eb42b0e08-1b0ea404",
     "queryResult": {
-        "queryText": "give explanation of previous",
+        "queryText": "get explanation of previous answer",
         "parameters": {
-            "componententity": ""
+            "componentname": "NED-DBpediaSpotlight"
         },
         "allRequiredParamsPresent": true,
-        "fulfillmentText": "Providing an explanation shortly",
+        "fulfillmentText": "No answer available.",
         "fulfillmentMessages": [
             {
                 "text": {
                     "text": [
-                        "Providing an explanation shortly"
+                        "No answer available."
                     ]
                 }
             }

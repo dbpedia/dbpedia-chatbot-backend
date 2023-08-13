@@ -105,7 +105,6 @@ def obtainPrefixedQueryData(query):
     }
 
     dataset = None
-    # Use regular expression to find the prefixes in the query
     prefix_matches = re.findall(r'\b(wd|wdt|dbpedia):', query)
     if prefix_matches:
         prefixes = set(prefix_matches)
@@ -170,33 +169,37 @@ def askQanaryIntent(agent):
 
 
 def getExplanationOfPrevAnswerIntent(agent):
-    # sessionId = agent['session'].split('/')[4]
-    # try:
-    #     lastGraphIdOfSession = lastGraphId[sessionId]
-    # except:
-    #     lastGraphIdOfSession = None
+    sessionId = agent['session'].split('/')[4]
+    print("session id: " + sessionId)
+    try:
+        lastGraphIdOfSession = lastGraphId[sessionId]
+    except:
+        lastGraphIdOfSession = None
     explanation = "Sorry, there was no previously asked question in this session."
-    # if lastGraphIdOfSession is not None:
-    endpointUrl = 'http://pie.qanary.net:8000/sparql'
-    output = "No explanation available."
-    graphId = "24a1132b-6c7d-4770-8f30-e87cd43f8cf8"
-    queryAnnotationsOfPrevQuestion = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
-        PREFIX qa: <http://www.wdaqua.eu/qa#>
-        SELECT *
-        FROM <"""+graphId+"""> 
-        WHERE {
-            ?annotationId rdf:type ?type.
-            ?annotationId oa:hasBody ?body.
-            ?annotationId oa:hasTarget ?target.
-            ?annotationId oa:annotatedBy $X .
-        }"""
-    sparql = SPARQLWrapper(endpointUrl)
-    sparql.setQuery(queryAnnotationsOfPrevQuestion)
-    sparql.setReturnFormat(JSON)
-    sparql.setMethod(POST)
-    result = sparql.queryAndConvert()
-
+    if lastGraphIdOfSession is not None:
+        endpointUrl = os.getenv('SPARQL_URL')
+        componentName = agent['queryResult']['parameters']['componentname']
+        print("component name: " + componentName)
+        queryAnnotationsOfPrevQuestion = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+            PREFIX qa: <http://www.wdaqua.eu/qa#>
+            SELECT *
+            FROM <"""+lastGraphIdOfSession+"""> 
+            WHERE {
+                ?annotationId rdf:type ?type.
+                ?annotationId oa:hasBody ?body.
+                ?annotationId oa:hasTarget ?target.
+                ?annotationId oa:annotatedBy ?componentname.
+                FILTER REGEX (STR(?componentname), ".*:"""+componentName+"""$") .  
+            }"""
+        sparql = SPARQLWrapper(endpointUrl)
+        sparql.setQuery(queryAnnotationsOfPrevQuestion)
+        sparql.setReturnFormat(JSON)
+        sparql.setMethod(POST)
+        result = sparql.queryAndConvert()
+    print(""+str(result))
+    explanationFromQanary = "You asked for the actions of "+componentName + \
+        "in the last QA process. There the component has identified the entity '' at position ... which was interpreted as the DBpedia-Resource ... (label)."
     return result if not None else explanation
 
 
