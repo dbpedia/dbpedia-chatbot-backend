@@ -11,16 +11,12 @@ from dotenv import load_dotenv
 load_dotenv()
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-defaultComponents = ["NED-DBpediaSpotlight", "SparqlExecuter",
-                     "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 profileComponents = []
-vizURL = "https://dbpedia-rdf-viz.herokuapp.com/visualize/"
 sessionIdManagement = {}
 lastKbquestion = {}
 lastGraphId = {}
 lastKbAnswer = {}
 profiles = {}
-profileComponents = []
 DEFAULT_COMPONENTS = ["NED-DBpediaSpotlight", "SparqlExecuter",
                       "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 
