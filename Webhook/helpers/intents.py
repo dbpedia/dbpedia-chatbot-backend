@@ -58,6 +58,7 @@ def activeQanaryComponentsIntent(agent):
 
 def getAnswerFromBackend(query, URL):
     # endpointUrl = os.getenv('DBPEDIA_SPARQL_URL')
+    print(str(query))
     sparql = SPARQLWrapper(URL)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
@@ -150,18 +151,62 @@ def askQanaryIntent(agent):
 
     show = getComponent['components']
     print(show)
+    print(str(lastKbquestion[sessionId]))
     params = {
         "question": lastKbquestion[sessionId],
         "componentlist[]": show
     }
+    print("URL: " + str(os.getenv('QANARY_PIPELINE_URL')))
     response = requests.post(os.getenv('QANARY_PIPELINE_URL'), params)
     responseDict = ast.literal_eval(response.text)
-    print(responseDict)
+    print("response dict: " + str(responseDict))
     currentGraphId = responseDict['inGraph']
     lastGraphId[sessionId] = currentGraphId
     output = getAnswerFromQanary(currentGraphId)
     lastKbAnswer[sessionId] = output
     return output
+
+
+def getAnnotationsOfComponentAction(annotationType, graphURI):
+    endpointUrl = os.getenv('SPARQL_URL')
+    if "AnnotationOfInstance" in annotationType:
+        queryAnnotationsOfComponent = """PREFIX qa: <http://www.wdaqua.eu/qa#> 
+            PREFIX oa: <http://www.w3.org/ns/openannotation/core/> 
+
+            SELECT 
+            ?annotation
+            ?question
+            ?startPosition
+            ?endPosition
+            ?resource
+            ?annotationCreator
+            ?annotationDate
+            ?annotationConfidence
+            FROM <"""+graphURI+"""> 
+            WHERE {
+                ?annotation a qa:AnnotationOfInstance .
+                ?annotation oa:hasTarget [
+                    a   oa:SpecificResource;
+                    oa:hasSource    ?question ;
+                    oa:hasSelector  [
+                         a oa:TextPositionSelector ;
+                        oa:start ?startPosition ;
+                        oa:end   ?endPosition
+                    ]
+                ] .
+                ?annotation oa:hasBody ?resource ;
+                oa:annotatedBy ?annotationCreator ;
+                oa:annotatedAt ?annotationDate ;
+                qa:score ?annotationConfidence .
+            }"""
+        sparql = SPARQLWrapper(endpointUrl)
+        sparql.setQuery(queryAnnotationsOfComponent)
+        sparql.setReturnFormat(JSON)
+        sparql.setMethod(POST)
+        print(str(queryAnnotationsOfComponent))
+        resultFromAnnotation = sparql.queryAndConvert()
+        print(str(resultFromAnnotation))
+        return resultFromAnnotation
 
 
 def getExplanationOfPrevAnswerIntent(agent):
@@ -193,9 +238,21 @@ def getExplanationOfPrevAnswerIntent(agent):
         sparql.setReturnFormat(JSON)
         sparql.setMethod(POST)
         result = sparql.queryAndConvert()
-    print(""+str(result))
-    explanationFromQanary = "You asked for the actions of "+componentName + \
-        "in the last QA process. There the component has identified the entity '' at position ... which was interpreted as the DBpedia-Resource ... (label)."
+        annotationType = result['results']['bindings'][0]['type']['value']
+        print(str(annotationType))
+        resultFromAnnotation = getAnnotationsOfComponentAction(
+            annotationType, lastGraphIdOfSession)
+    print(str(resultFromAnnotation))
+    annotationCreater = resultFromAnnotation['results']['bindings'][0]['annotationCreator']['value']
+    resource = resultFromAnnotation['results']['bindings'][0]['resource']['value']
+    startPos = resultFromAnnotation['results']['bindings'][0]['startPosition']['value']
+    endPos = resultFromAnnotation['results']['bindings'][0]['endPosition']['value']
+    confidence = resultFromAnnotation['results']['bindings'][0]['annotationConfidence']['value']
+    annotationDate = resultFromAnnotation['results']['bindings'][0]['annotationDate']['value']
+    explanationFromQanary = "In the previous question, the component " + annotationCreater +\
+        " has found the resource "+resource+" from position "+startPos+" to position "+endPos+". " +\
+        "The component claims a confidence of "+confidence + \
+        " for this result. The result was created at "+annotationDate+"."
     return explanationFromQanary if not None else explanation
 
 
