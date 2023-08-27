@@ -1,0 +1,38 @@
+{
+    "responseId": "349e65c0-4680-4d5e-af5e-04f51c5812b5-1b0ea404",
+    "queryResult": {
+        "queryText": "real name of superhero captain America",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "No answer available.",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "No answer available."
+                    ]
+                }
+            }
+        ],
+        "outputContexts": [
+            {
+                "name": "projects/fabled-alchemy-379117/agent/sessions/c9edd005-b579-95b3-1762-39677eccf5c2/contexts/__system_counters__",
+                "parameters": {
+                    "no-input": 0,
+                    "no-match": 0
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/fabled-alchemy-379117/agent/intents/031bc0e9-26dd-4585-b933-14fa56a01a5a",
+            "displayName": "qanary-AskQanary"
+        },
+        "intentDetectionConfidence": 0.7662884,
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "source": "DIALOGFLOW_CONSOLE",
+        "payload": {}
+    },
+    "session": "projects/dbpedia-chatbot-v1-kaab/agent/sessions/18191cd9-d123-f842-fdef-48df376ca011"
+}

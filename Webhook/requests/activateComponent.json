@@ -1,10 +1,10 @@
 {
   "responseId": "6ea20321-43c4-4daf-a96e-7b209bc9de47-97a30490",
   "queryResult": {
-    "queryText": "add ldshuyo",
+    "queryText": "activate component",
     "parameters": {
       "activatecomponent": [
-        "ldshuyo"
+        "QB-Python-DeepPavlov"
       ]
     },
     "allRequiredParamsPresent": true,
@@ -24,10 +24,10 @@
           "no-input": 0,
           "no-match": 0,
           "activatecomponent": [
-            "ldshuyo"
+            "QB-Python-DeepPavlov"
           ],
           "activatecomponent.original": [
-            "ldshuyo"
+            "QB-Python-DeepPavlov"
           ]
         }
       }

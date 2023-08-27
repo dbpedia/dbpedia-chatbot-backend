@@ -5,18 +5,20 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST
 import requests
 import sys
 import os
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
+profileComponents = []
 sessionIdManagement = {}
 lastKbquestion = {}
 lastGraphId = {}
+lastKbAnswer = {}
 profiles = {}
-profileComponents = []
 DEFAULT_COMPONENTS = ["NED-DBpediaSpotlight", "SparqlExecuter",
-                     "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
+                      "OpenTapiocaNED", "BirthDataQueryBuilder", "WikidataQueryExecuter"]
 
 
 def activateComponentIntent(agent):
@@ -54,14 +56,63 @@ def activeQanaryComponentsIntent(agent):
     return output
 
 
-def getAnswerFromDbpedia(query):
-    endpointUrl = os.getenv('DBDBPEDIA_SPARQL_URL')
-    sparql = SPARQLWrapper(endpointUrl)
+def getAnswerFromBackend(query, URL):
+    # endpointUrl = os.getenv('DBPEDIA_SPARQL_URL')
+    print(str(query))
+    sparql = SPARQLWrapper(URL)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
-    return result['results']['bindings'][0]['answer']['value']
+    print(result)
+    entityURI = result['results']['bindings'][0]['uri']['value']
+    getLabelQuery = """
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            SELECT ?label WHERE {
+            <"""+entityURI+"""> rdfs:label ?label
+            FILTER(LANG(?label)="en")
+            }
+"""
+    sparql = SPARQLWrapper(URL)
+    sparql.setQuery(getLabelQuery)
+    sparql.setReturnFormat(JSON)
+    sparql.setMethod(POST)
+    label = sparql.queryAndConvert()
+    label = label['results']['bindings'][0]['label']['value']
+    return "Thank you for trying the Qanary question-answering system! Here's the answer that Qanary retrived for you: " + str(label)
+
+
+def obtainPrefixedQueryData(query):
+    dataset_prefixes = {
+        "wd": {
+            "prefix": "wd",
+            "url": "http://www.wikidata.org/entity/",
+            "sparql_url": "https://query.wikidata.org/bigdata/namespace/wdq/sparql"
+        },
+        "wdt": {
+            "prefix": "wdt",
+            "url": "http://www.wikidata.org/prop/direct/",
+            "sparql_url": "https://query.wikidata.org/bigdata/namespace/wdq/sparql"
+        },
+        "dbp": {
+            "prefix": "dbp",
+            "url": "http://dbpedia.org/resource/",
+            "sparql_url": "https://dbpedia.org/sparql"
+        }
+    }
+
+    dataset = None
+    prefix_matches = re.findall(r'\b(wd|wdt|dbpedia):', query)
+    if prefix_matches:
+        prefixes = set(prefix_matches)
+        for prefix in prefixes:
+            if prefix in dataset_prefixes:
+                dataset = prefix if prefix != "dbpedia" else "dbpedia"
+                query = f"PREFIX {prefix}: <{dataset_prefixes[dataset]['url']}>\n" + query
+
+    sparql_url = dataset_prefixes.get(dataset, {}).get('sparql_url', None)
+
+    return query, sparql_url
 
 
 def getAnswerFromQanary(graphId):
@@ -83,8 +134,10 @@ def getAnswerFromQanary(graphId):
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
-    dbpediaQuery = result['results']['bindings'][0]['resultAsSparqlQuery']['value']
-    result = getAnswerFromDbpedia(dbpediaQuery)
+    print(result)
+    SparqlQuery = result['results']['bindings'][0]['resultAsSparqlQuery']['value']
+    finalSPARQLquery, queryURL = obtainPrefixedQueryData(SparqlQuery)
+    result = getAnswerFromBackend(finalSPARQLquery, queryURL)
     if result is not None:
         output = result
     return output
@@ -93,18 +146,114 @@ def getAnswerFromQanary(graphId):
 def askQanaryIntent(agent):
     sessionId = agent['session'].split('/')[4]
     lastKbquestion[sessionId] = agent['queryResult']['queryText']
+    print(sessionIdManagement)
     getComponent = sessionIdManagement[sessionId]
+
     show = getComponent['components']
+    print(show)
+    print(str(lastKbquestion[sessionId]))
     params = {
         "question": lastKbquestion[sessionId],
         "componentlist[]": show
     }
+    print("URL: " + str(os.getenv('QANARY_PIPELINE_URL')))
     response = requests.post(os.getenv('QANARY_PIPELINE_URL'), params)
     responseDict = ast.literal_eval(response.text)
+    print("response dict: " + str(responseDict))
     currentGraphId = responseDict['inGraph']
     lastGraphId[sessionId] = currentGraphId
     output = getAnswerFromQanary(currentGraphId)
+    lastKbAnswer[sessionId] = output
     return output
+
+
+def getAnnotationsOfComponentAction(annotationType, graphURI):
+    endpointUrl = os.getenv('SPARQL_URL')
+    if "AnnotationOfInstance" in annotationType:
+        queryAnnotationsOfComponent = """PREFIX qa: <http://www.wdaqua.eu/qa#> 
+            PREFIX oa: <http://www.w3.org/ns/openannotation/core/> 
+
+            SELECT 
+            ?annotation
+            ?question
+            ?startPosition
+            ?endPosition
+            ?resource
+            ?annotationCreator
+            ?annotationDate
+            ?annotationConfidence
+            FROM <"""+graphURI+"""> 
+            WHERE {
+                ?annotation a qa:AnnotationOfInstance .
+                ?annotation oa:hasTarget [
+                    a   oa:SpecificResource;
+                    oa:hasSource    ?question ;
+                    oa:hasSelector  [
+                         a oa:TextPositionSelector ;
+                        oa:start ?startPosition ;
+                        oa:end   ?endPosition
+                    ]
+                ] .
+                ?annotation oa:hasBody ?resource ;
+                oa:annotatedBy ?annotationCreator ;
+                oa:annotatedAt ?annotationDate ;
+                qa:score ?annotationConfidence .
+            }"""
+        sparql = SPARQLWrapper(endpointUrl)
+        sparql.setQuery(queryAnnotationsOfComponent)
+        sparql.setReturnFormat(JSON)
+        sparql.setMethod(POST)
+        print(str(queryAnnotationsOfComponent))
+        resultFromAnnotation = sparql.queryAndConvert()
+        print(str(resultFromAnnotation))
+        return resultFromAnnotation
+
+
+def getExplanationOfPrevAnswerIntent(agent):
+    sessionId = agent['session'].split('/')[4]
+    print("session id: " + sessionId)
+    try:
+        lastGraphIdOfSession = lastGraphId[sessionId]
+    except:
+        lastGraphIdOfSession = None
+    explanation = "Sorry, there was no previously asked question in this session."
+    if lastGraphIdOfSession is not None:
+        endpointUrl = os.getenv('SPARQL_URL')
+        componentName = agent['queryResult']['parameters']['componentname']
+        print("component name: " + componentName)
+        queryAnnotationsOfPrevQuestion = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
+            PREFIX qa: <http://www.wdaqua.eu/qa#>
+            SELECT *
+            FROM <"""+lastGraphIdOfSession+"""> 
+            WHERE {
+                ?annotationId rdf:type ?type.
+                ?annotationId oa:hasBody ?body.
+                ?annotationId oa:hasTarget ?target.
+                ?annotationId oa:annotatedBy ?componentname.
+                FILTER REGEX (STR(?componentname), ".*:"""+componentName+"""$") .  
+            }"""
+        sparql = SPARQLWrapper(endpointUrl)
+        sparql.setQuery(queryAnnotationsOfPrevQuestion)
+        sparql.setReturnFormat(JSON)
+        sparql.setMethod(POST)
+        result = sparql.queryAndConvert()
+        annotationType = result['results']['bindings'][0]['type']['value']
+        print(str(annotationType))
+        resultFromAnnotation = getAnnotationsOfComponentAction(
+            annotationType, lastGraphIdOfSession)
+    print(str(resultFromAnnotation))
+    annotationCreater = resultFromAnnotation['results']['bindings'][0]['annotationCreator']['value']
+    resource = resultFromAnnotation['results']['bindings'][0]['resource']['value']
+    startPos = resultFromAnnotation['results']['bindings'][0]['startPosition']['value']
+    endPos = resultFromAnnotation['results']['bindings'][0]['endPosition']['value']
+    confidence = resultFromAnnotation['results']['bindings'][0]['annotationConfidence']['value']
+    annotationDate = resultFromAnnotation['results']['bindings'][0]['annotationDate']['value']
+    explanationFromQanary = "In the previous question, the component " + annotationCreater +\
+        " has found the resource "+resource+" from position "+startPos+" to position "+endPos+". " +\
+        "The component claims a confidence of "+confidence + \
+        " for this result. The result was created at "+annotationDate+"."
+    return explanationFromQanary if not None else explanation
 
 
 def activateProfileIntent(agent):
@@ -135,6 +284,7 @@ def activateProfileIntent(agent):
 def addComponentToProfileIntent(agent):
     profileName = agent['queryResult']['parameters']['profilename']
     sessionId = sessionId = agent['session'].split('/')[4]
+    print(sessionId)
     if sessionId+profileName in profiles:
         componentName = agent['queryResult']['parameters']['componentname']
         qanaryComponentList = components.getQanaryComponents()
@@ -190,7 +340,7 @@ def createProfileIntent(agent):
     if sessionId+profileName in profiles:
         output = 'Profile \'' + profileName + '\' already exists.'
     else:
-        
+
         profiles[sessionId +
                  profileName] = {'components': profileComponents.copy()}
         output = ' Profile \'' + profileName + '\' added successfully. Now to use this profile you can say \'start ' + \

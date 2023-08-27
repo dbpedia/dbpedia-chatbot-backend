@@ -55,6 +55,7 @@ intentMap['qanary-ComponentStartsWith'] = intents.componentStartwithIntent
 intentMap['qanary-CreateProfile'] = intents.createProfileIntent
 intentMap['qanary-DeactivateComponent'] = intents.deactivateComponentIntent
 intentMap['qanary-EmptyComponents'] = intents.emptyComponentsIntent
+intentMap['qanary-GetExplanationOfPrevAnswer'] = intents.getExplanationOfPrevAnswerIntent
 intentMap['qanary-RemoveComponentFromProfile'] = intents.removeComponentFromProfileIntent
 intentMap['qanary-ResetComponents'] = intents.resetComponentsIntent
 intentMap['qanary-ShowActiveComponents'] = intents.showActiveComponentsIntent
