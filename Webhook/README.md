@@ -81,7 +81,7 @@ More elaborate response types as well as more information can be found in the [D
 
 **Access the webhook service of the chatbot using REST API calls from Postman/Insomnia**
 
-Use the URL https://demos.swe.htwk-leipzig.de/dbpedia-chatbot-webhook with a POST request. Use JSON as body and pick any request from the requests directory. 
+Use the URL https://demos.swe.htwk-leipzig.de/dbpedia-chatbot-webhook with a POST request. Use JSON as body and pick any request from the [requests directory](https://github.com/dbpedia/dbpedia-chatbot-backend/tree/main/Webhook/requests). 
 
 You should first create a profile if you want to start a question-answering pipeline and intend to ask a question. 
 The order you should go in is:
