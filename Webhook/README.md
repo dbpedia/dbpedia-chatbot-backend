@@ -1,6 +1,7 @@
 # Contributors
 * [Udit Arora](https://github.com/UditArora2000)
 * [Annemarie Wittig](https://github.com/AnnemarieWittig)
+* [Muskan Kothari](https://github.com/muskan-k)
 
 # Tutorial
 **Connecting a chatbot with a webhook**
@@ -76,3 +77,22 @@ and the response, if a [normal text message](https://cloud.google.com/dialogflow
 ```
 
 More elaborate response types as well as more information can be found in the [Documentaion](https://cloud.google.com/dialogflow/es/docs/fulfillment-webhook).
+
+
+**Access the webhook service of the chatbot using REST API calls from Postman/Insomnia**
+
+Use the URL https://demos.swe.htwk-leipzig.de/dbpedia-chatbot-webhook with a POST request. Use JSON as body and pick any request from the requests directory. 
+
+You should first create a profile if you want to start a question-answering pipeline and intend to ask a question. 
+The order you should go in is:
+1. Create profile
+2. Add component to profile
+3. Activate components in order
+4. Ask Qanary a question
+5. Optional - get explanation of the previous answer.
+
+   <img width="1136" alt="Screenshot 2023-08-28 at 6 18 01 PM" src="https://github.com/dbpedia/dbpedia-chatbot-backend/assets/60001051/ea0db25e-1c8b-4478-86c6-d8b54e8dde3a">
+
+
+
+
