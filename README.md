@@ -1,7 +1,7 @@
 # DBpedia Question Answering System
 A Question Answering pipeline to provide users with richer responses.  <br>
 
-This repository will provide the implementation of the project proposed that is funded by the [Google Summer of Code program].
+This repository will provide the implementation of the project proposed that is funded by the [Google Summer of Code program](https://summerofcode.withgoogle.com).
 
 The final Dbpedia Chatbot [Demo].
 
