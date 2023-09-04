@@ -12,7 +12,7 @@ qanaryComponentNames = None
 def getComponents():
     global qanaryComponents
     global qanaryComponentNames
-    print("component url" + str(os.getenv('COMPONENT_URL')))
+
     response = urllib.request.urlopen(
         os.getenv('COMPONENT_URL')).read().decode()
     body = ast.literal_eval(response)
@@ -34,9 +34,3 @@ def getQanaryComponents():
     global qanaryComponents
     getComponents()
     return qanaryComponents
-
-# async def updateComponents():
-#     try:
-#         await asyncio.wait_for(getComponents, timeout=15)
-#     except:
-#         print("15 sec done")
