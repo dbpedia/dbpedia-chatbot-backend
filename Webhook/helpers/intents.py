@@ -144,7 +144,7 @@ def getAnswerFromQanary(graphId):
 
 def askQanaryIntent(agent):
     sessionId = agent['session'].split('/')[4]
-    lastKbquestion[sessionId] = agent['queryResult']['parameters']['question']
+    lastKbquestion[sessionId] = agent['queryResult']['queryText']
 
     getComponent = sessionIdManagement[sessionId]
 

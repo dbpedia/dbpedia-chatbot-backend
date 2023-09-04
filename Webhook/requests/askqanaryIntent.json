@@ -1,10 +1,8 @@
 {
     "responseId": "349e65c0-4680-4d5e-af5e-04f51c5812b5-1b0ea404",
     "queryResult": {
-        "queryText": "ask qanary capital of germany",
-        "parameters": {
-            "question": "capital of germany"
-        },
+        "queryText": "real name of superhero captain America",
+        "parameters": {},
         "allRequiredParamsPresent": true,
         "fulfillmentText": "No answer available.",
         "fulfillmentMessages": [
