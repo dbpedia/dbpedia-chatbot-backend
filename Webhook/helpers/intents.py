@@ -57,14 +57,13 @@ def activeQanaryComponentsIntent(agent):
 
 
 def getAnswerFromBackend(query, URL):
-    # endpointUrl = os.getenv('DBPEDIA_SPARQL_URL')
-    print(str(query))
+
     sparql = SPARQLWrapper(URL)
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
-    print(result)
+
     entityURI = result['results']['bindings'][0]['uri']['value']
     getLabelQuery = """
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -134,7 +133,7 @@ def getAnswerFromQanary(graphId):
     sparql.setReturnFormat(JSON)
     sparql.setMethod(POST)
     result = sparql.queryAndConvert()
-    print(result)
+
     SparqlQuery = result['results']['bindings'][0]['resultAsSparqlQuery']['value']
     finalSPARQLquery, queryURL = obtainPrefixedQueryData(SparqlQuery)
     result = getAnswerFromBackend(finalSPARQLquery, queryURL)
@@ -145,21 +144,20 @@ def getAnswerFromQanary(graphId):
 
 def askQanaryIntent(agent):
     sessionId = agent['session'].split('/')[4]
-    lastKbquestion[sessionId] = agent['queryResult']['queryText']
-    print(sessionIdManagement)
+    lastKbquestion[sessionId] = agent['queryResult']['parameters']['question']
+
     getComponent = sessionIdManagement[sessionId]
 
     show = getComponent['components']
-    print(show)
-    print(str(lastKbquestion[sessionId]))
+
     params = {
         "question": lastKbquestion[sessionId],
         "componentlist[]": show
     }
-    print("URL: " + str(os.getenv('QANARY_PIPELINE_URL')))
+
     response = requests.post(os.getenv('QANARY_PIPELINE_URL'), params)
     responseDict = ast.literal_eval(response.text)
-    print("response dict: " + str(responseDict))
+
     currentGraphId = responseDict['inGraph']
     lastGraphId[sessionId] = currentGraphId
     output = getAnswerFromQanary(currentGraphId)
@@ -203,15 +201,14 @@ def getAnnotationsOfComponentAction(annotationType, graphURI):
         sparql.setQuery(queryAnnotationsOfComponent)
         sparql.setReturnFormat(JSON)
         sparql.setMethod(POST)
-        print(str(queryAnnotationsOfComponent))
+
         resultFromAnnotation = sparql.queryAndConvert()
-        print(str(resultFromAnnotation))
         return resultFromAnnotation
 
 
 def getExplanationOfPrevAnswerIntent(agent):
     sessionId = agent['session'].split('/')[4]
-    print("session id: " + sessionId)
+
     try:
         lastGraphIdOfSession = lastGraphId[sessionId]
     except:
@@ -220,7 +217,7 @@ def getExplanationOfPrevAnswerIntent(agent):
     if lastGraphIdOfSession is not None:
         endpointUrl = os.getenv('SPARQL_URL')
         componentName = agent['queryResult']['parameters']['componentname']
-        print("component name: " + componentName)
+
         queryAnnotationsOfPrevQuestion = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX oa: <http://www.w3.org/ns/openannotation/core/>
             PREFIX qa: <http://www.wdaqua.eu/qa#>
@@ -239,10 +236,10 @@ def getExplanationOfPrevAnswerIntent(agent):
         sparql.setMethod(POST)
         result = sparql.queryAndConvert()
         annotationType = result['results']['bindings'][0]['type']['value']
-        print(str(annotationType))
+
         resultFromAnnotation = getAnnotationsOfComponentAction(
             annotationType, lastGraphIdOfSession)
-    print(str(resultFromAnnotation))
+
     annotationCreater = resultFromAnnotation['results']['bindings'][0]['annotationCreator']['value']
     resource = resultFromAnnotation['results']['bindings'][0]['resource']['value']
     startPos = resultFromAnnotation['results']['bindings'][0]['startPosition']['value']
@@ -284,7 +281,7 @@ def activateProfileIntent(agent):
 def addComponentToProfileIntent(agent):
     profileName = agent['queryResult']['parameters']['profilename']
     sessionId = sessionId = agent['session'].split('/')[4]
-    print(sessionId)
+
     if sessionId+profileName in profiles:
         componentName = agent['queryResult']['parameters']['componentname']
         qanaryComponentList = components.getQanaryComponents()
